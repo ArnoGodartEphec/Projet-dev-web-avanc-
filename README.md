@@ -1,3 +1,3 @@
-Bienvenue dans le Github du projet de dev. Web de De Mal Raphaël, De Cock Maxime et Godart Arno :
+# Bienvenue sur le Github du site web Noob Cooking - Site réalisé par Arno Godart
 
-NOOB COOKING
+## Lien du Trello : https://trello.com/b/xgVClvJW
