@@ -1,4 +1,3 @@
-<!-- Header -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -11,9 +10,22 @@
 
     <!-- feuille de style du template <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"-->
 </head>
-<header class="w3-display-container w3-content w3-wide" style="max-width:1600px;min-width:500px" id="home">
-    <div class="container">
-        <h1 class="w3-xxlarge">Noob Cooking</h1>
+<body>
+    <div>
+        <h1>Bonjour <?php echo htmlspecialchars($_POST['nom']); ?></h1>
+            <h2>Merci d'avoir posté la recette : <?php echo htmlspecialchars($_POST['nomRecette']);?></h2>
+            <p>Description : <?php echo htmlspecialchars($_POST['description']); ?></p>
+            <p>Cette recette est pour <?php echo htmlspecialchars($_POST['personnes']);?></p>
     </div>
-</header>
+</body>
+<footer><?php include('footer.php');?></footer>
+
+
+
+
+
 </html>
+
+
+
+
