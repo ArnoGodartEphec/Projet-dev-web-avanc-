@@ -6,8 +6,13 @@
 <body>
 <?php
 // Connexion à la BDD avec le PDO
-$bdd = new PDO('mysql:host=localhost;port=3307;dbname=noobcooking;charset=utf8', 'root', 'root');
-?>
+// Permet de gérer les erreurs de connexion
+try {
+    $bdd = new PDO('mysql:host=localhost;dbname=noobcooking;charset=utf8', 'root', 'root');
+}
+catch (Exception $e){
+    die('Erreur : ' . $e->getMessage());
+}
 ?>
 </body>
 </html>
