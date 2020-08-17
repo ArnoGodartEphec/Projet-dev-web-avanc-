@@ -18,7 +18,7 @@
         <div class="w3-right w3-hide-small">
             <a href="about.php" class="w3-bar-item w3-button">A Propos</a>
             <a href="recettesFaciles.php" class="w3-bar-item w3-button">Recettes</a>
-            <a href="posterRecette.php" class="w3-bar-item w3-button">Postez votre recette</a>
+            <a href="creerCompte.php" class="w3-bar-item w3-button">Postez votre recette</a>
         </div>
     </div>
 </div>

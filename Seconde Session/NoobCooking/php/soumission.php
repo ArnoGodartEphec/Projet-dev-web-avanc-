@@ -16,6 +16,7 @@
             <h2>Merci d'avoir posté la recette : <?php echo htmlspecialchars($_POST['nomRecette']);?></h2>
             <p>Description : <?php echo htmlspecialchars($_POST['description']); ?></p>
             <p>Cette recette est pour <?php echo htmlspecialchars($_POST['personnes']);?></p>
+            <p>Difficulté de la recette : <?echo htmlspecialchars($_POST['difficultes']) ?></p>
     </div>
 </body>
 <footer><?php include('footer.php');?></footer>

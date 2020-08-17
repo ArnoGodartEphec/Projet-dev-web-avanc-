@@ -21,6 +21,12 @@
         <p><input type="number" placeholder="Pour combien ? (pas de négatifs stp)" name="personnes" id="personnes" required></p>
         <label for="description"></label>
         <p>Description :<textarea rows="5" cols="33" name="description" id="description" required></textarea></p>
+        <p>Sélectionnez votre difficulté :
+            <select name="difficultes">
+                <option value="facile">Facile</option>
+                <option value="moyen">Moyen</option>
+                <option value="difficile">Difficile</option>
+            </select></p>
         <p><input type="submit" value="Poster"></p>
     </form>
 </div>
