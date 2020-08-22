@@ -9,9 +9,12 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <title>Noob Cooking</title>
 
-    <!-- feuille de style du template <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"-->
+
 </head>
 <body>
+
+
+
 <div class="w3-row w3-padding-64" id="recettes">
     <div class="w3-col l6 w3-padding-large">
         <h1 class="w3-center">Recettes Faciles</h1><br>

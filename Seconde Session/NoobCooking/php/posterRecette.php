@@ -10,6 +10,9 @@
     <title>Noob Cooking</title>
 </head>
 <body>
+
+
+
 <div class="w3-container w3-padding-64" id="postez">
     <h1>Postez votre recette</h1><br>
     <form action="soumission.php" target="_blank" method="post">

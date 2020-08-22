@@ -11,6 +11,9 @@
     <!-- feuille de style du template <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"-->
 </head>
 <body>
+
+
+
     <div>
         <h1>Bonjour <?php echo htmlspecialchars($_POST['nom']); ?></h1>
             <h2>Merci d'avoir posté la recette : <?php echo htmlspecialchars($_POST['nomRecette']);?></h2>

@@ -10,5 +10,16 @@
 </head>
 <body>
 
+
+<div class="login-page">
+    <div class="form">
+        <form class="register-form">
+            <input type="text" placeholder="nom d'utilisateur"/>
+            <input type="password" placeholder="mot de passe"/>
+            <input type="text" placeholder="adresse mail"/>
+            <button>Créer compte</button>
+        </form>
+    </div>
+</div>
 </body>
 </html>

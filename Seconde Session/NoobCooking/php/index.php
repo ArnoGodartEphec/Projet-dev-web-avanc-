@@ -12,6 +12,8 @@
 
 <body>
 
+
+
 <!-- Bar de navigation -->
 <!-- Inclusion du fichier barreNavigation.php -->
     <?php include('barreNavigation.php'); ?>
