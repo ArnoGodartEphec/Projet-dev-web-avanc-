@@ -1,52 +1,58 @@
 <?php
 session_start();
-require_once 'C:/MAMP/htdocs/NoobCooking2/php/db_connect.php';
+require_once 'php/db_connect.php';
 
-// Si l'id >0 alors utilisateur créé
-if($_SESSION['id']>0){
+// Ici on vérifie si la c'est un utlisateur connecté ou pas
+if(isset($_SESSION['id'])){
 
-// Si id = 0 utilisateur non créé
-}else{
-    $_SESSION['id']=0;
+}
+else{
+  $_SESSION['id']=0;
+  $_SESSION['userName']="";
 }
 
-// On prépare la requête et on l'éxecute
-// Requête quand on créer un compte, quand on appuye sur le bouton "Se connecter"
-if (isset($_POST['envoi'])) {
+// Les 2 lignes en commentaires ici servent à "créer un compte" et hasher le mdp. Il faut créer le user et mdp dans la DB puis relaod la page
+// Pas super propre
+// $sth = $dbh->prepare('UPDATE users SET password = :mdp WHERE id = :id');
+// $sth->execute([':mdp' => password_hash('arno', PASSWORD_DEFAULT), ':id' => 2]);
+
+// Vérification du formulaire de connexion 
+if(isset($_POST['envoi'])) {
+    
     $sql = 'SELECT * FROM users WHERE username = :user';
     $sth = $dbh->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
     $sth->execute(array(':user' => trim(htmlspecialchars($_POST['user']))));
     $user = $sth->fetch(PDO::FETCH_ASSOC);
     $sth->closeCursor();
 
-    // On place le mdp dans la DB et on lui attribue un id
-    // $sth = $dbh->prepare('UPDATE users SET password = :mdp WHERE id = :id');
-    // Méthode pawword_hash permettant de hasher le pass envoyé à la DB (pas super propre)
-    // $sth->execute([':mdp' => password_hash('toto', PASSWORD_DEFAULT), ':id' => 1]);
-
-    //On vérifie le mot de passe hashé et le même que le password entré
+//Vérifie si le mot de passe dans la DB est le même que celui entré
     $isPasswordCorrect = password_verify($_POST['password'], $user['password']);
 
-// Boucle permettant de vérifier si l'user existe ou non (l'user peut poster une recette même si il n'est pas connecté)
-    if (!isset($user))   {
-        // Ici, l'user n'existe pas
-    } else {
-        if($isPasswordCorrect) {
-                // Si le mdp est correct, on place les infos
-                $_SESSION['id'] = $user['id'];
-                $_SESSION['userName'] = $user['username'];
-                $_SESSION['email'] = $user['email'];
-        }
 
-        else{
-            // Si le mdp n'est pas correct
-        }
-    }
+
+  if(!isset($user)) {
+    // Si l'user n'existe pas 
+  } else {
+      if($isPasswordCorrect) {
+        // Si le mot de passe est correcte
+        $_SESSION['id'] = $user['id'];
+        $_SESSION['userName'] = $user['username'];
+        $_SESSION['email'] = $user['email'];
+
+
+      }  
+      else{
+        // Mot de passe incorrecte
+      }
+    
+    
+  }
 }
+
+
 ?>
 
 <!-- Début du fichier HTML -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,111 +60,125 @@ if (isset($_POST['envoi'])) {
   <title>Noob Cooking</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- Google Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,900" rel="stylesheet">
-        <!-- Bootstrap CSS File -->
-        <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <!-- Libraries CSS Files -->
-        <link href="lib/unveil-effects/animations.css" rel="stylesheet">
-        <!-- Main Stylesheet File -->
-        <link href="css/style.css" rel="stylesheet">
-</head>
-<body>
-    <!-- Header -->
-    <?php include 'C:/MAMP/htdocs/NoobCooking2/header.php'; ?>
 
-<!-- Section Formulaire pour s'enregistrer -->
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,900" rel="stylesheet">
+
+  <!-- Bootstrap CSS File -->
+  <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Libraries CSS Files -->
+  <link href="lib/unveil-effects/animations.css" rel="stylesheet">
+
+  <!-- Main Stylesheet File -->
+  <link href="css/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<!-- Header -->
+<?php include('header.php'); ?>
+
+  <!-- Section blanche-->
   <div id="w">
     <div class="container">
       <div class="row centered">
         <div class="col-md-8 col-md-offset-2">
             <div class="form-group">
-                
-                <?php
-                if ( $_SESSION['id']==0){
-                    ?>
 
-                <form id='formContact' class="form-inline" method="post">
-                    <label for="user"></label>
+                <?php
+
+                // Si l'utilisateur n'est pas connecté, afficher le formulaire de connexion
+                    if ( $_SESSION['id']==0){
+
+                ?>
+                    <form id='formContact'class="form-inline" method="post">
                         <input type="text" id="user" class="input form-control" name="user" placeholder="Nom d'utilisateur" required>
-                    <label for="password"></label>
                         <input type="password" id="password" class="input form-control" name="password" placeholder="Mot de passe" required>
                         <button name="envoi" type="submit" id="submitContact" value="S'identifier"class="btn btn-primary mb-2">Se connecter</button>
-                </form>
-                
-          <?php
-}
-else{
-?>
-Vous êtes connecté - 
-<a href='logout.php'>Se déconnecter</a>
-<?php }
-          ?>
-            </div><br/>
-        </div>
-      </div>
-    </div>
-  </div>
+                    </form>   
+   
 
-<!-- Formulaire pour poster une recette -->
+                <?php
+                }
+                    else{   // Afficher un bouton pour se déconnecter
+                ?>
+                    Vous êtes connecté - 
+                     <a href='logout.php'>Se déconnecter</a>
+                <?php }
+          
+                ?>
+
+                <!-- Partie avec la petite flèche rouge -->
+                </div>
+                <br/>
+                <i class="glyphicon glyphicon-chevron-down"></i>
+            </div>
+        </div>
+    </div>
+</div>
+  
+
+
+<!--Formulaire permettant de poster une recette (connecté ou non) -->
 <div id="contact">
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <h2 class="centered">Postez votre recette</h2>
                     <div class="form-group">
-                        <label for="name"></label>
                         <input type="name" name="nom" class="form-control" id="nom"  required placeholder="Votre nom" value='<?php echo  $_SESSION['userName']?>' data-rule="minlen:4" data-msg="Ton nom fait vraiment moins de 4 lettres ?" >
                         <div class="validate"></div>
                     </div>
                     <div class="form-group">
-                        <label for="titre"></label>
                         <input type="text" name="titre" class="form-control" id="titre" required placeholder="Titre de la recette miam" data-rule="minlen:4" data-msg="Bizarre un titre aussi court non ?">
                         <div class="validate"></div>
                     </div>
                     <div class="form-group">
-                        <label for="recette"></label>
                         <textarea class="form-control" name="recette" id="recette" required placeholder="Le plus important" rows="5" data-rule="required" data-msg="Que viens tu faire ici au final ?"></textarea>
                         <div class="validate"></div>
                     </div>
                     <div class="form-send">
-                    <button onclick="cleanForm()" type="submit" class="btn btn-large">Ajouter la recette!</button>
+                        <button onclick="cleanForm()" type="submit" class="btn btn-large">Ajouter la recette!</button>
                     </div>
-
+                    
             </div>
         </div>
     </div>
 </div>
 
-<!-- Liste des recettes -->
+
+<!-- Section affichant la liste des recettes -->
 <div id="g">
     <div class="container">
         <div class="row mt">
             <div class="col-md-12">
-                <div id='recettes'></div>
+              <div id='recettes'>
+              </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Partie Copyrights -->
 <div id="copyrights">
     <div class="container">
-      <p>&copy; Copyrights Arno</p>
+        <p>&copy; Copyrights Arno</p>
+
+<!-- Librairies Javascript -->
+  <script src="lib/jquery/jquery.min.js"></script>
+  <script src="lib/bootstrap/js/bootstrap.min.js"></script>
+  <script src="lib/php-mail-form/validate.js"></script>
+  <script src="lib/unveil-effects/unveil-effects.js"></script>
+
+<!-- Fichier main.js provenant du template et pas vraiment utilisé -->
+  <script src="js/main.js"></script>
     </div>
 </div>
-
-    <!-- Librairies JS-->
-    <script src="lib/jquery/jquery.min.js"></script>
-    <script src="lib/bootstrap/js/bootstrap.min.js"></script>
-    <script src="lib/php-mail-form/validate.js"></script>
-    <script src="lib/unveil-effects/unveil-effects.js"></script>
-
-    <!-- Template Main Javascript File -->
-    <script src="js/main.js"></script>
-
 </body>
 
-<!-- Libraires pour les messages d'erreurs utilisés avec SweetAlert -->
+<!-- Librairies Bootstrap pour le JQuery ainsi que pour les messages d'erreurs (Sweetalert) -->
 <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.4/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"></script>
@@ -166,53 +186,56 @@ Vous êtes connecté -
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9">
 </script>
 
+
 <script>
+
 // Fonction gérant le formulaire
-    function cleanForm(){
-        var nom = $('#nom').val();
-        var titre = $('#titre').val();
-        var recette = $('#recette').val();
-        var id = <?php echo $_SESSION['id']; ?>;
-        
-        // Verification du formulaire, si les champs nom, titre et recette sont vides, afficher un pop up via Swal.fire
-        if(nom=='' || titre == ''|| recette ==''){
-            Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: "Il manque des données pour enregistrer la nouvelle recette !"
-            })
-        }
+function cleanForm(){
+    var nom = $('#nom').val();
+    var titre = $('#titre').val();
+    var recette = $('#recette').val();
+    var id = <?php echo $_SESSION['id']; ?>;
 
-        // Si données entrées correctement, appel à l'API addRecette
-        else{
+    // Si aucune donnée n'est entrée dans le formulaire, pop-up d'erreur
+    if(nom=='' || titre == ''|| recette ==''){
+      Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: "Il manque des données pour enregistrer la nouvelle recette."
+      })
+    }
+    // Sinon, faire appel à l'API addRecette, un POST qui permet d'ajouter une recette
+    else{
 
-            $.ajax({
-                url:'api/addRecette.php',
-                type:'POST',
-                data:{
-                    id:id,
-                    nom:nom,
-                    titre:titre,
-                    recette:recette
-                },
-            success: function(data){
-                Swal.fire({
-                    position: 'top-end',
-                    icon: 'success',
-                    title: "La recette a été ajoutée!",
-                    showConfirmButton: false,
-                    timer: 1500
-                })
-            document.getElementById("titre").value = "";
-            document.getElementById("recette").value = "";
-            remplirRecette();
-                }
-            });
-        } 
-    }  
+    $.ajax({
+            url:'api/addRecette.php',
+            type:'POST',
+            data:{
+                id:id,
+                nom:nom,
+                titre:titre,
+                recette:recette
+            },
+            success: function(data){        // Petit message confrimant que la recette a bien été ajoutée
+              Swal.fire({
+                        position: 'top-end',
+                        icon: 'success',
+                        title: "La recette a été ajoutée!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+              document.getElementById("titre").value = "";
+              document.getElementById("recette").value = "";
+              remplirRecette();
+            }
+    });
+  }
 
-// Fonction permettant de remplir la partie du bas du site avec la recette entrée
-function remplirRecette(){
+
+  }
+
+  // Appel à l'API getRecette, permettant d'afficher les recettes ajoutées dans la section verte
+  function remplirRecette(){
     $.ajax({
             url:'api/getRecette.php',
             type:'GET',
@@ -228,14 +251,17 @@ function remplirRecette(){
                 nombre++;
               }
               
+              
               $('#recettes').html(recetteAll); 
              
             }
     });
   }
 
-window.onload = function () {
+// Fonction permettant d'ajouter les recettes au chargement de la page
+  window.onload = function () { 
     remplirRecette();
-}
+   }
+
 </script>
 </html>

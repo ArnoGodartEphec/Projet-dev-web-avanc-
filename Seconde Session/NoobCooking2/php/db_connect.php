@@ -12,7 +12,7 @@ try {
     // set the PDO error mode to exception
     $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-// Si erreur de connexion
+// Si erreur de connexion, afficher un message
 } catch (PDOException $e) {
     error_log("Connection failed: " . $e->getMessage());
 }
