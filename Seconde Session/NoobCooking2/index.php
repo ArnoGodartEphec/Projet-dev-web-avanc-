@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "php/db_connect.php";
+require_once 'C:/MAMP/htdocs/NoobCooking2/php/db_connect.php';
 
 // Si l'id >0 alors utilisateur créé
 if($_SESSION['id']>0){
@@ -20,9 +20,9 @@ if (isset($_POST['envoi'])) {
     $sth->closeCursor();
 
     // On place le mdp dans la DB et on lui attribue un id
-    $sth = $dbh->prepare('UPDATE users SET password = :mdp WHERE id = :id');
+    // $sth = $dbh->prepare('UPDATE users SET password = :mdp WHERE id = :id');
     // Méthode pawword_hash permettant de hasher le pass envoyé à la DB (pas super propre)
-    $sth->execute([':mdp' => password_hash('toto', PASSWORD_DEFAULT), ':id' => 1]);
+    // $sth->execute([':mdp' => password_hash('toto', PASSWORD_DEFAULT), ':id' => 1]);
 
     //On vérifie le mot de passe hashé et le même que le password entré
     $isPasswordCorrect = password_verify($_POST['password'], $user['password']);
@@ -44,6 +44,9 @@ if (isset($_POST['envoi'])) {
     }
 }
 ?>
+
+<!-- Début du fichier HTML -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,7 +65,7 @@ if (isset($_POST['envoi'])) {
 </head>
 <body>
     <!-- Header -->
-    <?php include('header.php'); ?>
+    <?php include 'C:/MAMP/htdocs/NoobCooking2/header.php'; ?>
 
 <!-- Section Formulaire pour s'enregistrer -->
   <div id="w">
@@ -70,17 +73,27 @@ if (isset($_POST['envoi'])) {
       <div class="row centered">
         <div class="col-md-8 col-md-offset-2">
             <div class="form-group">
+                
                 <?php
-                if ( $_SESSION['id']==0){}
+                if ( $_SESSION['id']==0){
                     ?>
+
                 <form id='formContact' class="form-inline" method="post">
                     <label for="user"></label>
                         <input type="text" id="user" class="input form-control" name="user" placeholder="Nom d'utilisateur" required>
                     <label for="password"></label>
                         <input type="password" id="password" class="input form-control" name="password" placeholder="Mot de passe" required>
-                    <button name="envoi" type="submit" id="submitContact" value="S'identifier" class="btn btn-primary mb-2">Se connecter</button>
+                        <button name="envoi" type="submit" id="submitContact" value="S'identifier"class="btn btn-primary mb-2">Se connecter</button>
                 </form>
-
+                
+          <?php
+}
+else{
+?>
+Vous êtes connecté - 
+<a href='logout.php'>Se déconnecter</a>
+<?php }
+          ?>
             </div><br/>
         </div>
       </div>
@@ -95,7 +108,7 @@ if (isset($_POST['envoi'])) {
                 <h2 class="centered">Postez votre recette</h2>
                     <div class="form-group">
                         <label for="name"></label>
-                        <input type="name" name="nom" class="form-control" id="nom" required placeholder="Votre nom" value="name" data-rule="minlen:4" data-msg="Ton nom fait vraiment moins de 4 lettres ?" >
+                        <input type="name" name="nom" class="form-control" id="nom"  required placeholder="Votre nom" value='<?php echo  $_SESSION['userName']?>' data-rule="minlen:4" data-msg="Ton nom fait vraiment moins de 4 lettres ?" >
                         <div class="validate"></div>
                     </div>
                     <div class="form-group">
@@ -109,7 +122,7 @@ if (isset($_POST['envoi'])) {
                         <div class="validate"></div>
                     </div>
                     <div class="form-send">
-                        <button type="submit" class="btn btn-large">Ajouter la recette!</button>
+                    <button onclick="cleanForm()" type="submit" class="btn btn-large">Ajouter la recette!</button>
                     </div>
 
             </div>
@@ -122,11 +135,7 @@ if (isset($_POST['envoi'])) {
     <div class="container">
         <div class="row mt">
             <div class="col-md-12">
-                <ul class="list-group-flush">
-                    <li class="list-group-item" id="nomUser">toto</li>
-                    <li class="list-group-item" id="titreRecette">test</li>
-                    <li class="list-group-item">test</li>
-                </ul>
+                <div id='recettes'></div>
             </div>
         </div>
     </div>
@@ -148,4 +157,85 @@ if (isset($_POST['envoi'])) {
     <script src="js/main.js"></script>
 
 </body>
+
+<!-- Libraires pour les messages d'erreurs utilisés avec SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.4/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-match-height@0.7.2/dist/jquery.matchHeight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9">
+</script>
+
+<script>
+// Fonction gérant le formulaire
+    function cleanForm(){
+        var nom = $('#nom').val();
+        var titre = $('#titre').val();
+        var recette = $('#recette').val();
+        var id = <?php echo $_SESSION['id']; ?>;
+        
+        // Verification du formulaire, si les champs nom, titre et recette sont vides, afficher un pop up via Swal.fire
+        if(nom=='' || titre == ''|| recette ==''){
+            Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "Il manque des données pour enregistrer la nouvelle recette !"
+            })
+        }
+
+        // Si données entrées correctement, appel à l'API addRecette
+        else{
+
+            $.ajax({
+                url:'api/addRecette.php',
+                type:'POST',
+                data:{
+                    id:id,
+                    nom:nom,
+                    titre:titre,
+                    recette:recette
+                },
+            success: function(data){
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: "La recette a été ajoutée!",
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            document.getElementById("titre").value = "";
+            document.getElementById("recette").value = "";
+            remplirRecette();
+                }
+            });
+        } 
+    }  
+
+// Fonction permettant de remplir la partie du bas du site avec la recette entrée
+function remplirRecette(){
+    $.ajax({
+            url:'api/getRecette.php',
+            type:'GET',
+            success: function(data){
+              data=JSON.parse(data);
+              var recetteAll=""
+              var nombre=1;
+              for(var i = 0;i<data.length;i++){
+                var ligne= "<h2>"+nombre+") Titre: "+data[i]["titre"]+"</h2>"+
+                           "<h5>Auteur: "+data[i]["nom"]+"</h5>"+
+                            data[i]["description"]+"<br><hr>";
+                recetteAll=recetteAll+ligne;
+                nombre++;
+              }
+              
+              $('#recettes').html(recetteAll); 
+             
+            }
+    });
+  }
+
+window.onload = function () {
+    remplirRecette();
+}
+</script>
 </html>
